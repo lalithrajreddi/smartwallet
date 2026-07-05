@@ -78,9 +78,9 @@ def predict():
     if df_countries is not None:
         countries_list = sorted(df_countries['Country Name'].unique().tolist())
 
-    # GET request: Render the indexnew.html form page
+    # GET request: Render the index.html form page
     if request.method == 'GET':
-        return render_template('indexnew.html', countries=countries_list)
+        return render_template('index.html', countries=countries_list)
 
     # POST request: support BOTH JSON (AJAX) and HTML Form Post
     if request.is_json:
@@ -177,7 +177,7 @@ def predict():
             gni_capita_str = request.form.get('gni_capita')
 
             if not all([country_name, life_expectancy_str, expected_schooling_str, mean_schooling_str, gni_capita_str]):
-                return render_template('indexnew.html', countries=countries_list, error="Please fill all indicators.")
+                return render_template('index.html', countries=countries_list, error="Please fill all indicators.")
 
             life_expectancy = float(life_expectancy_str)
             expected_schooling = float(expected_schooling_str)
@@ -233,7 +233,7 @@ def predict():
                 'comparisons': comparisons
             }
 
-            return render_template('indexnew.html', 
+            return render_template('index.html', 
                                    countries=countries_list,
                                    selected_country=country_name,
                                    life_expectancy=life_expectancy,
@@ -243,7 +243,7 @@ def predict():
                                    prediction=prediction_result)
 
         except Exception as e:
-            return render_template('indexnew.html', countries=countries_list, error=f"Prediction failed: {str(e)}")
+            return render_template('index.html', countries=countries_list, error=f"Prediction failed: {str(e)}")
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)

@@ -8,7 +8,7 @@ An interactive, end-to-end Machine Learning web application designed to predict 
 
 *   **Multi-Page Architecture**: Realigned with standard project guidelines into distinct, dedicated pages:
     *   **Home Page (`home.html`)**: Features an introduction to the Human Development Index (HDI) and its three dimensions with a quick-launch link to the engine.
-    *   **Prediction Page (`indexnew.html`)**: Allows users to select a country from an alphabetical dropdown, adjust key indicators, and submit form posts to calculate predictions.
+    *   **Prediction Page (`index.html`)**: Allows users to select a country from an alphabetical dropdown, adjust key indicators, and submit form posts to calculate predictions.
 *   **Predictive ML Engine**: Uses a trained **Linear Regression** model with 5 variables (including label-encoded country codes) to predict a country's HDI score, classify it into the official UNDP tiers (**Very High, High, Medium, or Low**), calculate dimension-specific indices, and recommended comparable countries.
 *   **10-Plot Insights Hub**: Expanded Exploratory Data Analysis (EDA) gallery featuring exactly 10 statistical plots (strip plots, distributions, heatmaps, and scatter plots) rendered using the first 20 rows of the dataset to ensure a clean, uncluttered visual layout.
 *   **Label Encoding Integration**: Features dynamic label encoding for country categories, allowing spatial representations to serve as active model parameters.
@@ -43,7 +43,7 @@ SmartWallet-HDI/ (Project Directory)
 ├── .gitignore              # Ignores pycache, IDE configs, and environments
 ├── templates/
 │   ├── home.html           # Landing page with introduction and portal link
-│   └── indexnew.html       # Prediction form and report template
+│   └── index.html       # Prediction form and report template
 └── static/
     ├── css/
     │   └── style.css       # Premium space-dark stylesheet
