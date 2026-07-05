@@ -245,5 +245,9 @@ def predict():
         except Exception as e:
             return render_template('index.html', countries=countries_list, error=f"Prediction failed: {str(e)}")
 
+@app.route('/insights')
+def insights():
+    return render_template('insights.html')
+
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)

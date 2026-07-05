@@ -29,7 +29,7 @@ An interactive, end-to-end Machine Learning web application designed to predict 
 ## 📂 Codebase File Structure
 
 ```
-SmartWallet-HDI/ (Project Directory)
+SmartWallet/ (Project Directory)
 ├── app.py                  # Flask web backend application hosting routes (GET/POST)
 ├── download_data.py        # Data pipeline: cleans, normalizes, label encodes, and sorts columns
 ├── eda.py                  # Generates exactly 10 statistical visualizations from first 20 rows
@@ -43,7 +43,8 @@ SmartWallet-HDI/ (Project Directory)
 ├── .gitignore              # Ignores pycache, IDE configs, and environments
 ├── templates/
 │   ├── home.html           # Landing page with introduction and portal link
-│   └── index.html       # Prediction form and report template
+│   ├── index.html          # Prediction form and report template
+│   └── insights.html       # Visual insights dashboard with lightbox zoom modal
 └── static/
     ├── css/
     │   └── style.css       # Premium space-dark stylesheet
@@ -121,3 +122,4 @@ python app.py
 Once running, open your web browser and navigate to:
 *   👉 Home Page: **[http://127.0.0.1:5000/](http://127.0.0.1:5000/)**
 *   👉 Prediction Engine Page: **[http://127.0.0.1:5000/predict](http://127.0.0.1:5000/predict)**
+*   👉 Visual Insights Page: **[http://127.0.0.1:5000/insights](http://127.0.0.1:5000/insights)**

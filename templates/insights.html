@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Development Index (HDI) Predictor - Insights</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .plots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        .plot-card {
+            transition: var(--transition-smooth);
+        }
+        .plot-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-hdi-glow);
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.15);
+        }
+        .plot-img-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: pointer;
+            aspect-ratio: 1.6 / 1;
+        }
+        .plot-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-smooth);
+        }
+        .plot-img-container:hover img {
+            transform: scale(1.05);
+        }
+        .plot-zoom-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 15, 25, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+        .plot-img-container:hover .plot-zoom-overlay {
+            opacity: 1;
+        }
+        .zoom-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(15, 23, 42, 0.85);
+            color: var(--accent-hdi);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--accent-hdi);
+            box-shadow: 0 0 15px var(--accent-hdi-glow);
+        }
+        /* Lightbox styling */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(11, 15, 25, 0.95);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+        .lightbox-content {
+            max-width: 85%;
+            max-height: 80%;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-premium);
+        }
+        .lightbox-caption {
+            margin-top: 15px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            max-width: 700px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: var(--text-secondary);
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .lightbox-close:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 15px;">
+                    <div class="logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-.778.099-1.533.284-2.253" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1 style="color: var(--text-primary);">HDI Predictor</h1>
+                        <p>Machine Learning Powered Global Analysis</p>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Navigation Links -->
+            <div style="display: flex; gap: 10px;">
+                <a href="/" class="tab-btn" style="text-decoration: none; padding: 10px 15px; display: inline-flex; align-items: center; gap: 8px;">Home</a>
+                <a href="/predict" class="tab-btn" style="text-decoration: none; padding: 10px 15px; display: inline-flex; align-items: center; gap: 8px;">Predict Engine</a>
+                <a href="/insights" class="tab-btn active" style="text-decoration: none; padding: 10px 15px; display: inline-flex; align-items: center; gap: 8px;">Visual Insights</a>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="app-main">
+            
+            <section class="section-intro">
+                <h2>Exploratory Data Analysis Insights</h2>
+                <p>Detailed charts illustrating socioeconomic trends and index correlations across the first 20 countries.</p>
+            </section>
+            
+            <div class="plots-grid">
+                <!-- Plot 1: Correlation Heatmap -->
+                <div class="card glass-card plot-card">
+                    <div class="plot-header">
+                        <h3 style="color: var(--text-primary);">Correlation matrix heatmap</h3>
+                    </div>
+                    <div class="plot-img-container">
+                        <img src="{{ url_for('static', filename='plots/correlation_matrix.png') }}" alt="Correlation matrix heatmap" class="plot-img">
+                        <div class="plot-zoom-overlay"><div class="zoom-icon">&plus;</div></div>
+                    </div>
+                    <div class="plot-body">
+                        <p class="plot-caption"><strong>Insight:</strong> Demonstrates strong positive correlations between Life Expectancy, schooling variables, and the final HDI score.</p>
+                    </div>
+                </div>
+
+                <!-- Plot 2: Schooling vs HDI Strip Plot -->
+                <div class="card glass-card plot-card">
+                    <div class="plot-header">
+                        <h3 style="color: var(--text-primary);">Schooling vs HDI Strip Plot</h3>
+                    </div>
+                    <div class="plot-img-container">
+                        <img src="{{ url_for('static', filename='plots/schooling_vs_hdi_strip.png') }}" alt="Mean Years of Schooling vs HDI Strip Plot" class="plot-img">
+                        <div class="plot-zoom-overlay"><div class="zoom-icon">&plus;</div></div>
+                    </div>
+                    <div class="plot-body">
+                        <p class="plot-caption"><strong>Insight:</strong> Compares discrete mean schooling thresholds against HDI values, showing clear education progression tiers.</p>
+                    </div>
+                </div>
+
+                <!-- Plot 3: Life Expectancy vs HDI Scatter Plot -->
+                <div class="card glass-card plot-card">
+                    <div class="plot-header">
+                        <h3 style="color: var(--text-primary);">Life expectancy vs HDI</h3>
+                    </div>
+                    <div class="plot-img-container">
+                        <img src="{{ url_for('static', filename='plots/life_expectancy_vs_hdi.png') }}" alt="Life expectancy vs HDI" class="plot-img">
+                        <div class="plot-zoom-overlay"><div class="zoom-icon">&plus;</div></div>
+                    </div>
+                    <div class="plot-body">
+                        <p class="plot-caption"><strong>Insight:</strong> Portrays the linear relationship between health/longevity and composite national development scores.</p>
+                    </div>
+                </div>
+
+                <!-- Plot 4: GNI vs HDI Log Scale -->
+                <div class="card glass-card plot-card">
+                    <div class="plot-header">
+                        <h3 style="color: var(--text-primary);">GNI per capita vs HDI</h3>
+                    </div>
+                    <div class="plot-img-container">
+                        <img src="{{ url_for('static', filename='plots/gni_vs_hdi.png') }}" alt="GNI per capita vs HDI Score" class="plot-img">
+                        <div class="plot-zoom-overlay"><div class="zoom-icon">&plus;</div></div>
+                    </div>
+                    <div class="plot-body">
+                        <p class="plot-caption"><strong>Insight:</strong> Economic income exhibits logarithmic returns, leveling off as nations enter higher development brackets.</p>
+                    </div>
+                </div>
+
+                <!-- Plot 5: HDI Score Distribution -->
+                <div class="card glass-card plot-card">
+                    <div class="plot-header">
+                        <h3 style="color: var(--text-primary);">HDI Score Distribution</h3>
+                    </div>
+                    <div class="plot-img-container">
+                        <img src="{{ url_for('static', filename='plots/hdi_distribution.png') }}" alt="HDI Score Distribution" class="plot-img">
+                        <div class="plot-zoom-overlay"><div class="zoom-icon">&plus;</div></div>
+                    </div>
+                    <div class="plot-body">
+                        <p class="plot-caption"><strong>Insight:</strong> Highlights the count frequency and distribution density of HDI scores in the first 20 countries.</p>
+                    </div>
+                </div>
+
+                <!-- Plot 6: GNI Per Capita by Tier -->
+                <div class="card glass-card plot-card">
+                    <div class="plot-header">
+                        <h3 style="color: var(--text-primary);">GNI per capita across Tiers</h3>
+                    </div>
+                    <div class="plot-img-container">
+                        <img src="{{ url_for('static', filename='plots/strip_plot.png') }}" alt="GNI per capita across Tiers" class="plot-img">
+                        <div class="plot-zoom-overlay"><div class="zoom-icon">&plus;</div></div>
+                    </div>
+                    <div class="plot-body">
+                        <p class="plot-caption"><strong>Insight:</strong> Strip plot displaying logarithmic GNI brackets categorized by official development tiers.</p>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+        
+        <!-- Footer -->
+        <footer class="app-footer-bar" style="margin-top: 40px;">
+            <p>Human Development Index (HDI) Predictor Dashboard &copy; 2026. Made with Python, Flask, and Scikit-Learn.</p>
+        </footer>
+        
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="image-lightbox">
+        <span class="lightbox-close" id="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+
+    <!-- Lightbox Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const images = document.querySelectorAll('.plot-img-container');
+            const lightbox = document.getElementById('image-lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            const lightboxClose = document.getElementById('lightbox-close');
+
+            images.forEach(container => {
+                container.addEventListener('click', () => {
+                    const img = container.querySelector('img');
+                    lightbox.classList.add('active');
+                    lightboxImg.src = img.src;
+                    lightboxCaption.textContent = img.alt;
+                });
+            });
+
+            if (lightboxClose) {
+                lightboxClose.addEventListener('click', () => {
+                    lightbox.classList.remove('active');
+                });
+            }
+
+            if (lightbox) {
+                lightbox.addEventListener('click', (e) => {
+                    if (e.target !== lightboxImg && e.target !== lightboxCaption) {
+                        lightbox.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
