@@ -1,7 +1,7 @@
 HDI PREDICTOR MODEL SUMMARY
 ===========================
 Algorithm: Linear Regression
-Features: ['Country Name', 'Life expectancy', 'Expected yrs of schooling', 'Mean yrs of schooling', 'GNI per capita']
+Features: ['Country_Encoded', 'Life expectancy', 'Expected yrs of schooling', 'Mean yrs of schooling', 'GNI per capita']
 Train/Test split: 80/20
 
 Testing Performance:
@@ -11,7 +11,7 @@ Testing Performance:
   RMSE: 0.022820
 
 Coefficients:
-  Country Name: -0.000019
+  Country_Encoded: -0.000019
   Life expectancy: 0.006120
   Expected yrs of schooling: 0.015196
   Mean yrs of schooling: 0.017455

@@ -50,15 +50,18 @@ def train_hdi_model():
     from sklearn.preprocessing import LabelEncoder
     le = LabelEncoder()
     # Fill null country name with "Unknown" if any
-    X_raw.iloc[:, 0] = X_raw.iloc[:, 0].fillna("Unknown")
-    X_raw.iloc[:, 0] = le.fit_transform(X_raw.iloc[:, 0])
-    
+    country_col = X_raw.iloc[:, 0].fillna("Unknown").astype(str)
+    country_encoded = le.fit_transform(country_col)
+
     # Save the label encoder for Flask backend
     with open(encoder_path, 'wb') as f:
         pickle.dump(le, f)
     print(f"Saved LabelEncoder to '{encoder_path}'")
-    
-    X = X_raw
+
+    # Rebuild X with the encoded country column (avoids dtype conflicts when
+    # writing int codes back into a str-typed column)
+    X = X_raw.drop(columns=[X_raw.columns[0]])
+    X.insert(0, 'Country_Encoded', country_encoded)
     
     # Step 6: Split dataset into training and testing sets (80% train, 20% test)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
