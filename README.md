@@ -29,7 +29,7 @@ An interactive, end-to-end Machine Learning web application designed to predict 
 ## 📂 Codebase File Structure
 
 ```
-SkillWallet/ (Project Directory)
+SkillWallet-HDI/ (Project Directory)
 ├── app.py                  # Flask web backend application hosting routes (GET/POST)
 ├── download_data.py        # Data pipeline: cleans, normalizes, label encodes, and sorts columns
 ├── eda.py                  # Generates exactly 10 statistical visualizations from first 20 rows
